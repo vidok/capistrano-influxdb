@@ -10,14 +10,19 @@ namespace :influxdb do
         fetch(:influxdb_connection, {})
       )
 
-      data = fetch(:influxdb_variables, [
+      tags = fetch(:influxdb_variables, [
           :application,
           :branch,
           :stage,
       ]).inject({}) do |hash, key|
         hash[key] = fetch(key, nil); hash
       end
-      
+
+      data = {
+        values: { value: 1},
+        tags: tags
+      }
+
       info "Reporting deploy to influxdb"
       influxdb.write_point(fetch(:influxdb_series, 'capistrano'), data)
     end
